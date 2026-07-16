@@ -6,35 +6,51 @@ require_relative 'linked_list/lib/linked_list'
 class HashMap
   LOAD_FACTOR = 0.75
 
+  attr_reader :buckets, :capacity, :length
+
   # creates an empty HashMap with a capacity of 16
   # to handle collisions, each item of the HashMap is an empty LinkedList
-  def initialize
+  def initialize(capacity = 16)
+    @capacity = capacity
+    @length = 0
+    @buckets = Array.new(capacity) { LinkedList.new }
   end
 
   # produces a hash code based on the enterred key
   def hash(key)
+    hash_code = 0
+    prime = 31
+
+    key.each_char { |char| hash_code = hash_code * prime + char.ord }
+
+    hash_code
   end
 
   # saves a key, value pair into a place chosen based on the hash method
+  # reassigns value for an already existing key
   # needs to also check if the HashMap needs to grow
   def set(key, value)
+    if has?(key)
+      buckets[hash(key) % capacity].update(key, value)
+    else
+      buckets[hash(key) % capacity].append(key, value)
+    end
   end
 
   # returns the value assigned to the key, or nil if the key doesn't exist
   def get(key)
+    buckets[hash(key) % capacity].each { |node| return node.value if node.key == key }
   end
 
   # returns true if the HashMap includes the given key, false otherwise
   def has?(key)
+    buckets[hash(key) % capacity].each { |node| return true if node.key == key }
+
+    false
   end
 
   # removes the corresponding key, value pair
   def remove(key)
-  end
-
-  # returns the number of key, value pairs in the HashMap
-  # probably make it an instance variable instead
-  def length
   end
 
   # removes all key, value pairs from the HashMap
