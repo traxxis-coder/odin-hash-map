@@ -147,4 +147,67 @@ describe HashMap do
       expect(growing_map.buckets[17].head.value).to eq(1)
     end
   end
+
+  describe '#clear' do
+    subject(:clean_map) { described_class.new }
+    before do
+      13.times { |n| clean_map.set(n.to_s, n) }
+      clean_map.clear
+    end
+
+    it 'resets @buckets to an array of size 16' do
+      expect(clean_map.buckets.size).to eq(16)
+    end
+
+    it 'resets @buckets to an array of empty lists' do
+      expect(clean_map.buckets.all? { |list| list.size.zero? }).to be true # rubocop:disable Style/ZeroLengthPredicate
+    end
+
+    it 'resets @capacity to 16' do
+      expect(clean_map.capacity).to eq(16)
+    end
+
+    it 'resets @length to 0' do
+      expect(clean_map.length).to be_zero
+    end
+  end
+
+  describe '#keys' do
+    subject(:map_with_keys) { described_class.new }
+    before do
+      5.times { |n| map_with_keys.set(n.to_s, n) }
+    end
+
+    it 'returns an array of all keys' do
+      expected = %w[0 1 2 3 4]
+      actual = map_with_keys.keys
+      expect(actual).to match(expected)
+    end
+  end
+
+  describe '#values' do
+    subject(:map_with_values) { described_class.new }
+    before do
+      5.times { |n| map_with_values.set(n.to_s, n) }
+    end
+
+    it 'returns an array of all values' do
+      expected = [0, 1, 2, 3, 4]
+      actual = map_with_values.values
+      expect(actual).to match(expected)
+    end
+  end
+
+  describe '#entries' do
+    subject(:map_with_entries) { described_class.new }
+    before do
+      5.times { |n| map_with_entries.set(n.to_s, n) }
+    end
+
+    it 'returns a nested array of key, value pairs' do
+      expected = [['0', 0], ['1', 1], ['2', 2], ['3', 3], ['4', 4]]
+      actual = map_with_entries.entries
+      expect(actual).to match(expected)
+    end
+  end
 end

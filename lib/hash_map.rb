@@ -59,19 +59,31 @@ class HashMap
 
   # removes all key, value pairs from the HashMap
   def clear
+    initialize
   end
 
   # returns an array of all keys in the HashMap
   def keys
+    keys = []
+    buckets.each { |list| list.each { |node| keys << node.key } }
+    keys
   end
 
   # returns an array of all values in the HashMap
   def values
+    values = []
+    buckets.each { |list| list.each { |node| values << node.value } }
+    values
   end
 
   # returns a nested array of all key, value oairs in the HashMap
   def entries
+    entries = []
+    buckets.each { |list| list.each { |node| entries << [node.key, node.value] } }
+    entries
   end
+
+  private
 
   # performs the growth process of the HashMap
   # expands the array to double its size and reallocates the key, value pairs to be spread evenly
