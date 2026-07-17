@@ -84,5 +84,9 @@ describe HashMap do
       removing_map.remove('f')
       expect(removing_map.has?('f')).to be false
     end
+
+    it 'returns the value of the removed node' do
+      expect(removing_map.remove('f')).to eq('Fiona')
+    end
   end
 end

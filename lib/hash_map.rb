@@ -44,13 +44,12 @@ class HashMap
 
   # returns true if the HashMap includes the given key, false otherwise
   def has?(key)
-    buckets[hash(key) % capacity].each { |node| return true if node.key == key }
-
-    false
+    buckets[hash(key) % capacity].contains_key?(key)
   end
 
   # removes the corresponding key, value pair
   def remove(key)
+    buckets[hash(key) % capacity].remove_key(key)
   end
 
   # removes all key, value pairs from the HashMap
