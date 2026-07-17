@@ -33,6 +33,8 @@ class HashMap
     if has?(key)
       buckets[hash(key) % capacity].update(key, value)
     else
+      @length += 1
+      grow if capacity * LOAD_FACTOR < length
       buckets[hash(key) % capacity].append(key, value)
     end
   end
@@ -48,8 +50,11 @@ class HashMap
   end
 
   # removes the corresponding key, value pair
+  # returns removed value or nil if key not found
   def remove(key)
-    buckets[hash(key) % capacity].remove_key(key)
+    value = buckets[hash(key) % capacity].remove_key(key)
+    @length -= 1 if value
+    value
   end
 
   # removes all key, value pairs from the HashMap
@@ -71,5 +76,9 @@ class HashMap
   # performs the growth process of the HashMap
   # expands the array to double its size and reallocates the key, value pairs to be spread evenly
   def grow
+    @capacity *= 2
+    new_buckets = Array.new(capacity) { LinkedList.new }
+    @buckets.each { |list| list.each { |node| new_buckets[hash(node.key) % capacity].append(node.key, node.value) } }
+    @buckets = new_buckets
   end
 end

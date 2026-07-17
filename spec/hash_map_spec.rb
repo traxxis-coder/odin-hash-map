@@ -30,18 +30,51 @@ describe HashMap do
     before do
       setting_map.set('a', 'Albert')
     end
-    it 'places a key, value pair in the correct bucket' do
-      expect(setting_map.buckets[1].head.value).to eq('Albert')
+
+    context 'when adding a new key' do
+      it 'places a key, value pair in the correct bucket' do
+        expect(setting_map.buckets[1].head.value).to eq('Albert')
+      end
+
+      it 'increments @length for new bucket' do
+        expect(setting_map.length).to eq(1)
+      end
     end
 
-    it 'updates the value of the node with the given key' do
-      setting_map.set('a', 'Alphonse')
-      expect(setting_map.buckets[1].head.value).to eq('Alphonse')
+    context 'when resolving a collision' do
+      before do
+        setting_map.set('q', 'Quentin')
+      end
+      it 'adds the node to the list at index for a different key leading to the same bucket' do
+        expect(setting_map.buckets[1].head.next_node.value).to eq('Quentin')
+      end
+
+      it 'increments @length' do
+        expect(setting_map.length).to eq(2)
+      end
     end
 
-    it 'adds the node to the list at index for a different key leading to the same bucket' do
-      setting_map.set('q', 'Quentin')
-      expect(setting_map.buckets[1].head.next_node.value).to eq('Quentin')
+    context 'when updating an existing key' do
+      before do
+        setting_map.set('a', 'Alphonse')
+      end
+      it 'updates the value of the node with the given key' do
+        expect(setting_map.buckets[1].head.value).to eq('Alphonse')
+      end
+
+      it 'doesn\'t increment @length' do
+        expect(setting_map.length).to eq(1)
+      end
+    end
+
+    context 'when adding the 13th node' do
+      before do
+        11.times { |n| setting_map.set(n.to_s, n) } # the setting_map already has 1 node from another before block
+      end
+      it 'triggers the #grow method' do
+        expect(setting_map).to receive(:grow)
+        setting_map.set('g', 'Ginny')
+      end
     end
   end
 
@@ -87,6 +120,31 @@ describe HashMap do
 
     it 'returns the value of the removed node' do
       expect(removing_map.remove('f')).to eq('Fiona')
+    end
+
+    it 'decrements @length' do
+      removing_map.remove('f')
+      expect(removing_map.length).to eq(0)
+    end
+  end
+
+  describe '#grow' do
+    subject(:growing_map) { described_class.new }
+    before do
+      # #grow is called implicitly in the 13th #set method call as tested above
+      13.times { |n| growing_map.set(n.to_s, n) }
+    end
+
+    it 'doubles the current capacity' do
+      expect(growing_map.capacity).to eq(32)
+    end
+
+    it 'creates a new array double the size of the original' do
+      expect(growing_map.buckets.size).to eq(32)
+    end
+
+    it 'reassigns nodes to new buckets evenly' do
+      expect(growing_map.buckets[17].head.value).to eq(1)
     end
   end
 end
