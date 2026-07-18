@@ -9,11 +9,4 @@ class HashSet < MyHash
     grow if capacity * LOAD_FACTOR < length
     buckets[hash(key) % capacity].append(key)
   end
-
-  # def remove(key)
-  #   return unless has?(key)
-
-  #   @length -= 1
-  #   buckets[hash(key) % capacity].remove_key(key)
-  # end
 end
