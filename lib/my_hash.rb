@@ -44,9 +44,10 @@ class MyHash
   # removes the corresponding key, value pair
   # returns removed value or nil if key not found
   def remove(key)
-    value = buckets[hash(key) % capacity].remove_key(key)
-    @length -= 1 if value
-    value
+    return unless has?(key)
+
+    @length -= 1
+    buckets[hash(key) % capacity].remove_key(key)
   end
 
   # removes all key, value pairs from the HashMap
